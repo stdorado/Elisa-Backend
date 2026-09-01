@@ -1,0 +1,32 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(npm install)",
+            "Bash(npm install *)",
+            "Bash(npm audit)",
+            "Bash(npm audit fix)",
+            "Bash(npm outdated)",
+            "Bash(node server.js)",
+            "Bash(node -e *)",
+            "Bash(git status)",
+            "Bash(git diff *)",
+            "Bash(git add *)",
+            "Bash(git commit *)",
+            "Bash(git log *)",
+            "Bash(git push)",
+            "Bash(cat *)",
+            "Bash(ls *)",
+            "Bash(mkdir *)"
+        ],
+        "deny": [
+            "Bash(rm -rf *)",
+            "Bash(curl * | bash)",
+            "Bash(wget * | bash)",
+            "Bash(npm publish)",
+            "Bash(npm run dev)",
+            "Bash(git push --force)",
+            "Bash(git reset --hard *)",
+            "Bash(cd ../Front*)"
+        ]
+    }
+}
