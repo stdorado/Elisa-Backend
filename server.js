@@ -4,6 +4,10 @@ const app = require('./app');
 
 const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`Servidor en http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
