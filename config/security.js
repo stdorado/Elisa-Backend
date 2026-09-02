@@ -21,10 +21,13 @@ const helmetConfig = helmet({
   referrerPolicy: { policy: 'no-referrer' },
 });
 
-const corsConfig = cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ['GET', 'POST'],
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-});
+  credentials: false,
+};
 
-module.exports = { helmetConfig, corsConfig };
+const corsConfig = cors(corsOptions);
+
+module.exports = { helmetConfig, corsConfig, corsOptions };

@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/admin.routes');
 const app = express();
 
 app.use(helmetConfig);
+app.options('*', corsConfig);
 app.use(corsConfig);
 app.use(express.json());
 
