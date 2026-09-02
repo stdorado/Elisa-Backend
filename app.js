@@ -8,9 +8,12 @@ const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
-app.use(helmetConfig);
+// CORS preflight — tiene que ser lo primero
 app.options('*', corsConfig);
 app.use(corsConfig);
+
+// Recién después el resto de middlewares
+app.use(helmetConfig);
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
