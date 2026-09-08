@@ -24,6 +24,18 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.use('/api', (req, res, next) => {
+  if (req.method === 'POST') {
+    const ct = req.headers['content-type'] || '';
+    if (!ct.includes('application/json')) {
+      return res.status(415).json({
+        error: 'Content-Type debe ser application/json'
+      });
+    }
+  }
+  next();
+});
+
 app.use('/api', scanRoutes);
 app.use('/api', statsRoutes);
 app.use('/api', adminRoutes);

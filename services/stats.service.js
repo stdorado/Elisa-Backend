@@ -1,10 +1,17 @@
 const { supabaseAdmin } = require('../config/supabase');
 
 async function obtenerDatos() {
-  const { data, error } = await supabaseAdmin
-    .from('scans')
-    .select('id, zona, created_at')
-    .order('created_at', { ascending: false });
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout')), 8000)
+  );
+
+  const { data, error } = await Promise.race([
+    supabaseAdmin
+      .from('scans')
+      .select('id, zona, created_at')
+      .order('created_at', { ascending: false }),
+    timeoutPromise
+  ]);
 
   if (error) {
     console.error(`[ERROR] Supabase select: ${error.message} — ${new Date().toISOString()}`);

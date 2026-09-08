@@ -10,7 +10,7 @@ function validateZona(req, res, next) {
     return res.status(400).json({ error: 'Zona requerida' });
   }
 
-  const zonaLimpia = zona.trim().toLowerCase();
+  const zonaLimpia = zona.toString().trim().toLowerCase().slice(0, 50);
   if (!ZONAS_VALIDAS.includes(zonaLimpia)) {
     console.warn(`[WARN] Zona inválida: '${zonaLimpia}' — ${new Date().toISOString()}`);
     return res.status(400).json({ error: 'Zona inválida' });
