@@ -1,8 +1,22 @@
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const QRCode = require('qrcode');
 
 const { ZONAS_VALIDAS } = require('../middleware/validate');
+
+if (!process.env.HMAC_SECRET) {
+  console.error('✗ Falta HMAC_SECRET en el .env — no se pueden firmar los QRs');
+  process.exit(1);
+}
+
+function generarToken(zona) {
+  return crypto
+    .createHmac('sha256', process.env.HMAC_SECRET)
+    .update(zona)
+    .digest('hex');
+}
 
 const ZONAS = [
   { id: 'centro', label: 'El Centro' },
@@ -74,7 +88,8 @@ async function generarQRs() {
   const cardsImprimir = [];
 
   for (const { id, label } of ZONAS) {
-    const url = `${BASE_URL}/?zona=${id}`;
+    const token = generarToken(id);
+    const url = `${BASE_URL}/?zona=${id}&t=${token}`;
     const filePath = path.join(OUTPUT_DIR, `qr-${id}.png`);
 
     const buffer = await QRCode.toBuffer(url, opciones);
