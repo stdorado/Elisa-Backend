@@ -5,7 +5,10 @@ function requireAdmin(req, res, next) {
     : null;
 
   if (!token || token !== process.env.ADMIN_TOKEN) {
-    console.warn(`[WARN] Acceso a ${req.path} sin token — ${new Date().toISOString()}`);
+    console.warn(
+      `[WARN] Acceso a ${req.path} sin token — requestId: ${req.requestId} ` +
+      `— ${new Date().toISOString()}`
+    );
     return res.status(401).json({ error: 'No autorizado' });
   }
 

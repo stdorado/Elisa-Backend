@@ -3,9 +3,10 @@ const router = express.Router();
 
 const { scanLimiter } = require('../middleware/rateLimiter');
 const { validateZona } = require('../middleware/validate');
+const { verificarHMAC } = require('../middleware/hmac');
 const { insertarScan } = require('../services/scan.service');
 
-router.post('/scan', scanLimiter, validateZona, async (req, res) => {
+router.post('/scan', scanLimiter, validateZona, verificarHMAC, async (req, res) => {
   const { zona } = req.body;
 
   try {

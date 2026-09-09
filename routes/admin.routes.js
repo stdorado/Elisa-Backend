@@ -11,4 +11,24 @@ router.post('/admin/verify', (req, res) => {
   res.json({ ok: true });
 });
 
+const HONEYPOT_PATHS = [
+  '/admin/users',
+  '/admin/config',
+  '/admin/export',
+  '/debug',
+  '/v1/scan',
+  '/v2/scan',
+];
+
+HONEYPOT_PATHS.forEach(path => {
+  router.all(path, (req, res) => {
+    console.warn(
+      `[HONEYPOT] Acceso sospechoso a ${path} ` +
+      `— método: ${req.method} ` +
+      `— ${new Date().toISOString()}`
+    );
+    res.status(404).json({ error: 'Not found' });
+  });
+});
+
 module.exports = router;

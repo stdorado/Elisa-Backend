@@ -1,6 +1,7 @@
 const express = require('express');
 const hpp = require('hpp');
 const compression = require('compression');
+const { randomUUID } = require('crypto');
 
 const { helmetConfig, corsConfig } = require('./config/security');
 
@@ -9,6 +10,13 @@ const statsRoutes = require('./routes/stats.routes');
 const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
+
+app.use((req, res, next) => {
+  const requestId = randomUUID();
+  req.requestId = requestId;
+  res.setHeader('X-Request-Id', requestId);
+  next();
+});
 
 app.use(compression({
   threshold: 1024,
@@ -53,6 +61,19 @@ app.use('/api', (req, res, next) => {
 app.use('/api', scanRoutes);
 app.use('/api', statsRoutes);
 app.use('/api', adminRoutes);
+
+const ROOT_HONEYPOT_PATHS = ['/wp-admin', '/.env', '/config.json'];
+ROOT_HONEYPOT_PATHS.forEach(path => {
+  app.all(path, (req, res) => {
+    console.warn(
+      `[HONEYPOT] Acceso sospechoso a ${path} ` +
+      `— método: ${req.method} ` +
+      `— ${new Date().toISOString()}`
+    );
+    res.status(404).json({ error: 'Not found' });
+  });
+});
+
 app.use("/", (req, res) => {
     res.send("Welcome back elisa")
 })

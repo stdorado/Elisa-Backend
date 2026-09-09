@@ -8,7 +8,10 @@ const scanLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    console.warn(`[WARN] Rate limit excedido — ${new Date().toISOString()}`);
+    console.warn(
+      `[WARN] Rate limit excedido — requestId: ${req.requestId} ` +
+      `— ${new Date().toISOString()}`
+    );
     res.status(429).json({ error: 'Demasiadas peticiones. Intentá más tarde.' });
   },
 });
