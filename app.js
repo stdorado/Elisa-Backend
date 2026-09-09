@@ -1,4 +1,6 @@
 const express = require('express');
+const hpp = require('hpp');
+const compression = require('compression');
 
 const { helmetConfig, corsConfig } = require('./config/security');
 
@@ -8,13 +10,25 @@ const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
+app.use(compression({
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
+
 // CORS preflight — tiene que ser lo primero
 app.options('*', corsConfig);
 app.use(corsConfig);
 
 // Recién después el resto de middlewares
 app.use(helmetConfig);
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+app.use(hpp({
+  whitelist: ['zona']
+}));
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -42,5 +56,15 @@ app.use('/api', adminRoutes);
 app.use("/", (req, res) => {
     res.send("Welcome back elisa")
 })
+
+app.use((err, req, res, next) => {
+  const isProd = process.env.NODE_ENV === 'production';
+  console.error(`[ERROR] ${err.message} — ${new Date().toISOString()}`);
+  res.status(err.status || 500).json({
+    error: isProd
+      ? 'Error interno del servidor'
+      : err.message
+  });
+});
 
 module.exports = app;
